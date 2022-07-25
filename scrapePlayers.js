@@ -2,40 +2,16 @@ import * as cheerio from 'cheerio';
 import got from 'got';
 import fs from 'fs';
 
-const fileName = 'players.json';
-
-const alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-
-const getPlayerListUrl = (letter) => {
-    letter = letter.toLowerCase();
-    return `https://www.basketball-reference.com/players/${letter}/`;
-}
-
 const players = [];
 
-const main = async () => {
-    for (const letter of alphabet) {
-        const url = getPlayerListUrl(letter);
-        const response = await got.get(url);
+/* The lowercase alphabet sliced out of the char map and converted to an array, for no real good reason */
+const alphabet = [...String.fromCharCode(...Array(123).keys()).slice(97)];
 
-        const $ = cheerio.load(response.body);
+const getPlayerListUrl = (letter) => `https://www.baseball-reference.com/players/${letter}/`;
 
-        $('th.left a').each((i, el) => {
-            const href = el.attribs.href;
-            const name = $(el).html();
-            console.log(name);
-            const [blank, _players, letter, _name] = href.split('/');
-            const [finalName, html] = _name.split('.');
-            players.push({
-                letter: letter,
-                slug: finalName,
-                name: name
-            });
-        })
-    }
-
+const writeToFakeDB = (fileName, array) => {
     const writeStream = fs.createWriteStream(fileName);
- 
+
     writeStream.write(JSON.stringify(players));
 
     writeStream.on('finish', () => {
@@ -47,8 +23,23 @@ const main = async () => {
     });
 
     writeStream.end();
-}
+};
 
-main();
+(async () => {
+    for (const letter of alphabet) {
+        const response = await got.get(getPlayerListUrl(letter));
+        const $ = cheerio.load(response.body);
+
+        $('#div_players_ p b a').each((i, el) => {
+            const name = $(el).html();
+            console.log(name);
+            const [blank, _players, letter, _name] = el.attribs.href.split('/');
+            const [slug, html] = _name.split('.');
+            players.push({ letter, name, slug });
+        });
+
+        writeToFakeDB('players.json', players);
+    }
+})();
 
 

@@ -7,7 +7,7 @@ const fileName = 'gamelog.json';
 const getGamelogUrl = (player) => {
     const {letter, slug} = player;
     return `https://www.basketball-reference.com/players/${letter.toUpperCase()}/${slug}/gamelog/2022`
-}
+};
 
 const getColumnName = (index) => {
     const cols = [
@@ -44,11 +44,11 @@ const getColumnName = (index) => {
     ];
 
     return cols[index];
-}
+};
 
 const isEmpty = (obj) => {
     return Object.keys(obj).length === 0;
-}
+};
 
 const gamelog = [];
 
@@ -103,7 +103,7 @@ const main = async () => {
     });
 
     writeStream.end();
-}
+};
 
 main();
 
