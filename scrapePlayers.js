@@ -4,8 +4,7 @@ import got from 'got';
 const players = [];
 
 /* The lowercase alphabet sliced out of the char map and converted to an array, for no real good reason */
-//const alphabet = [...String.fromCharCode(...Array(123).keys()).slice(97)];
-const alphabet = 'z';
+const alphabet = [...String.fromCharCode(...Array(123).keys()).slice(97)];
 
 const getPlayerListUrl = (letter) => `https://www.baseball-reference.com/players/${letter}/`;
 
