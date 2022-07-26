@@ -1,31 +1,15 @@
 import * as cheerio from 'cheerio';
 import got from 'got';
-import fs from 'fs';
 
 const players = [];
 
 /* The lowercase alphabet sliced out of the char map and converted to an array, for no real good reason */
-const alphabet = [...String.fromCharCode(...Array(123).keys()).slice(97)];
+//const alphabet = [...String.fromCharCode(...Array(123).keys()).slice(97)];
+const alphabet = 'z';
 
 const getPlayerListUrl = (letter) => `https://www.baseball-reference.com/players/${letter}/`;
 
-const writeToFakeDB = (fileName, array) => {
-    const writeStream = fs.createWriteStream(fileName);
-
-    writeStream.write(JSON.stringify(players));
-
-    writeStream.on('finish', () => {
-        console.log('done');
-    });
-
-    writeStream.on('error', (err) => {
-        console.error(err);
-    });
-
-    writeStream.end();
-};
-
-(async () => {
+export default async () => {
     for (const letter of alphabet) {
         const response = await got.get(getPlayerListUrl(letter));
         const $ = cheerio.load(response.body);
@@ -38,8 +22,8 @@ const writeToFakeDB = (fileName, array) => {
             players.push({ letter, name, slug });
         });
 
-        writeToFakeDB('players.json', players);
+        return players;
     }
-})();
+};
 
 
