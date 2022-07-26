@@ -20,9 +20,8 @@ export default async () => {
             const [slug, html] = _name.split('.');
             players.push({ letter, name, slug });
         });
-
-        return players;
     }
+    return players;
 };
 
 
